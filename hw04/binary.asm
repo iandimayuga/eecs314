@@ -101,14 +101,14 @@ main:
 
     sll $t1, $t0, 2 # multiply by 4 for word alignment
     add $t1, $t1, $s1 # find array index address
-    sw $v0, $t1 # write to memory
+    sw $v0, ($t1) # write to memory
 
     addi $t0, $t0, 1 # increment counter
 
     bne $t0, $s0, array_loop # loop until length reached
 
   # prompt for search value
-  li $a0, search_prompt
+  la $a0, search_prompt
   li $v0, 4 # print string
   syscall
 
@@ -116,11 +116,32 @@ main:
   li $v0, 5
   syscall
 
+  # call search function
   add $a0, $zero, $s1 # pass array address
   add $a1, $zero, $v0 # pass search value
   add $a2, $zero, $zero # pass left index (0)
   add $a3, $zero, $s0 # pass right index (length)
+  jal search
+  add $s0, $zero, $v0 # $s0 = index
 
-  exit:
-    li $v0, 10
+  slti $t0, $s0, 0
+  beq $t0, $zero, found
+
+  # output not found
+  la $a0, notfound_prompt
+  li $v0, 4 # print string
+  syscall
+  j exit
+  
+  found:
+    la $a0, found_prompt
+    li $v0, 4 # print string
     syscall
+    add $a0, $zero, $s0
+    li $v0, 1 # print integer
+    syscall
+    j exit
+
+exit:
+  li $v0, 10
+  syscall
