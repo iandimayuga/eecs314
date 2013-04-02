@@ -13,7 +13,7 @@ found_prompt:
   .asciiz "Found at index "
 
 notfound_prompt:
-  .asciiz "Not found in array."
+  .asciiz "Not found in array"
 
 .text
 
@@ -23,8 +23,8 @@ search: # (array, value, left, right), $v0 = index or -1 if not found
   sw $a2, 4($sp) # push left parameter
   sw $a3, 8($sp) # push right parameter
 
-  slt $t0, $a3, $a2 # test if right < left
-  beq $t0, $zero, search_partition # if right >= left skip to partition step
+  slt $t0, $a2, $a3 # test if left < right
+  bne $t0, $zero, search_partition # if left < right skip to partition step
 
   # otherwise if right < left return -1
   addi $v0, $zero, -1 # set return value
