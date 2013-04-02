@@ -51,7 +51,7 @@ search: # (array, value, left, right), $v0 = index or -1 if not found
     beq $t1, $zero, search_right # if value >= a[mid], search right
 
     search_left:
-      addi $a3, $t0, -1
+      add $a3, $zero, $t0
       jal search
       j search_return
 
@@ -70,7 +70,7 @@ search: # (array, value, left, right), $v0 = index or -1 if not found
 main:
   # prompt for array length
   la $a0, length_prompt # pass string
-  li $v0, 4 # print
+  li $v0, 4 # print string
   syscall
 
   # receive input
@@ -92,7 +92,7 @@ main:
     li $v0, 1 # print integer
     syscall
     la $a0, input_prompt # pass ordinal and prompt
-    li $v0, 4 # print
+    li $v0, 4 # print string
     syscall
 
     # receive input
@@ -105,7 +105,21 @@ main:
 
     addi $t0, $t0, 1 # increment counter
 
-    bne $t0, $s3, array_loop # loop until length reached
+    bne $t0, $s0, array_loop # loop until length reached
+
+  # prompt for search value
+  li $a0, search_prompt
+  li $v0, 4 # print string
+  syscall
+
+  # receive input
+  li $v0, 5
+  syscall
+
+  add $a0, $zero, $s1 # pass array address
+  add $a1, $zero, $v0 # pass search value
+  add $a2, $zero, $zero # pass left index (0)
+  add $a3, $zero, $s0 # pass right index (length)
 
   exit:
     li $v0, 10
