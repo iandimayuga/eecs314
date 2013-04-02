@@ -1,5 +1,20 @@
 .data
 
+length_prompt:
+  .asciiz "Length of (sorted) array: "
+
+input_prompt:
+  .asciiz "th value: "
+
+search_prompt:
+  .asciiz "Value to search: "
+
+found_prompt:
+  .asciiz "Found at index "
+
+notfound_prompt:
+  .asciiz "Not found in array."
+
 .text
 
 search: # (array, value, left, right), $v0 = index or -1 if not found
@@ -19,7 +34,7 @@ search: # (array, value, left, right), $v0 = index or -1 if not found
     # calculate middle index
     add $t0, $a2, $a3
     srl $t0, $t0, 1 # divide by 2 for average
-    sll $t1, $t0, 2 # multiply by 4 for memory alignment
+    sll $t1, $t0, 2 # multiply by 4 for word alignment
     add $t1, $t1, $a0 # calculate actual memory address of middle index
 
     lw $t2, ($t1) # access middle index
@@ -53,6 +68,28 @@ search: # (array, value, left, right), $v0 = index or -1 if not found
     jr $ra
 
 main:
+  # prompt for array length
+  la $a0, length_prompt # pass string
+  li $v0, 4 # print
+  syscall
+
+  # receive input
+  li $v0, 5
+  syscall
+  add $s0, $zero, $v0 # $s0 = length
+
+  # allocate memory for array
+  sll $a0, $s0, 2 # multiply by 4 for word alignment
+  li $v0, 9 # allocate heap
+  syscall
+  add $s1, $zero, $v0 # $s1 = array address
+
+  # populate array from user input
+  add $t0, $zero, $zero # initialize counter
+  array_loop:
+
+    bne $t0, $s3, array_loop # loop until length reached
+
   exit:
     li $v0, 10
     syscall
