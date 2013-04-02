@@ -87,6 +87,23 @@ main:
   # populate array from user input
   add $t0, $zero, $zero # initialize counter
   array_loop:
+    # prompt for nth input
+    add $a0, $zero, $t0 # pass counter value
+    li $v0, 1 # print integer
+    syscall
+    la $a0, input_prompt # pass ordinal and prompt
+    li $v0, 4 # print
+    syscall
+
+    # receive input
+    li $v0, 5
+    syscall
+
+    sll $t1, $t0, 2 # multiply by 4 for word alignment
+    add $t1, $t1, $s1 # find array index address
+    sw $v0, $t1 # write to memory
+
+    addi $t0, $t0, 1 # increment counter
 
     bne $t0, $s3, array_loop # loop until length reached
 
